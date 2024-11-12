@@ -16,6 +16,8 @@
         "alarms",
         "notifications",
         "tabs",
-        "activeTab"
+        "activeTab",
+        "windows",
+        "runtime"
     ]
 }

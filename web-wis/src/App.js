@@ -15,6 +15,7 @@ const App = () => {
         console.log(currentView)
     }, [currentView])
 
+
     useEffect(() => {
         // Connect to the background script
         const port = chrome.runtime.connect();
@@ -24,6 +25,11 @@ const App = () => {
           if (message.type === "NEW_URL") {
             console.log("Received URL via port:", message.url);
             // Trigger your hook or update state here
+            if (true){
+                    // Send a message to the background script
+                    chrome.runtime.sendMessage({ action: 'openExtension' });
+                    setCurrentView(1)
+            }
           }
         });
     
