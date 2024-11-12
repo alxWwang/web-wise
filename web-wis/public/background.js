@@ -1,23 +1,12 @@
-// background.js
+let port;
 
-let connectedPorts = [];
+chrome.runtime.onConnect.addListener(function (p) {
+  console.log("Connected to React app");
+  port = p;
 
-// Handle long-lived connections
-chrome.runtime.onConnect.addListener((port) => {
-  console.log("Connected port:", port);
-  connectedPorts.push(port); // Keep track of connected ports
-
-  port.onDisconnect.addListener(() => {
-    console.log("Port disconnected");
-    connectedPorts = connectedPorts.filter((p) => p !== port);
-  });
-
-  port.onMessage.addListener((message) => {
-    console.log("Message received on port:", message);
-
-    if (message.type === "NEW_URL") {
-      port.postMessage({ type: "RESPONSE", message: "Background is active" });
-    }
+  port.onDisconnect.addListener(function () {
+    console.log("Disconnected from React app");
+    port = null;
   });
 });
 
@@ -34,17 +23,14 @@ chrome.tabs.onCreated.addListener((tab) => {
   chrome.tabs.update(tab.id, { url: "https://www.youtube.com" });
 });
 
-// Listen for tab updates
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete" && tab.url) {
+  if (port && changeInfo.status === "complete" && tab.url) {
     console.log("Tab fully loaded:", tab.url);
 
-    // Send a message with the new tab URL via connected ports
-    connectedPorts.forEach((port) => {
-      port.postMessage({
-        type: "NEW_URL",
-        url: tab.url,
-      });
+    // Send a message through the port
+    port.postMessage({
+      type: "NEW_URL",
+      url: tab.url,
     });
   }
 });

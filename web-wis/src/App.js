@@ -13,21 +13,22 @@ const App = () => {
     const [tabUrl, setTabUrl] = useState("");
     useEffect(()=>{
         console.log(currentView)
-    })
+    }, [currentView])
 
     useEffect(() => {
-        const messageListener = (message, sender, sendResponse) => {
-          if (message.type === 'NEW_URL') {
-            console.log('Received NEW_URL message:', message.url);
-            // Handle the new URL as needed
+        // Connect to the background script
+        const port = chrome.runtime.connect();
+    
+        port.onMessage.addListener(function (message) {
+        console.log("connected recieving")
+          if (message.type === "NEW_URL") {
+            console.log("Received URL via port:", message.url);
+            // Trigger your hook or update state here
           }
-        };
+        });
     
-        chrome.runtime.onMessage.addListener(messageListener);
-    
-        // Clean up the listener when the component unmounts
         return () => {
-          chrome.runtime.onMessage.removeListener(messageListener);
+          port.disconnect();
         };
       }, []);
 
