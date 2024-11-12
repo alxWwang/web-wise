@@ -12,6 +12,26 @@ const App = () => {
     useEffect(()=>{
         console.log(currentView)
     })
+
+    useEffect(() => {
+        // Set up the message listener
+        const handleMessage = (message) => {
+          if (message.type === "NEW_URL") {
+            console.log("Received URL in React component:", message.url);
+            setTabUrl(message.url);
+          }
+        };
+    
+        // Listen for messages from the background script
+        chrome.runtime.onMessage.addListener(handleMessage);
+    
+        // Cleanup listener when component unmounts
+        return () => {
+          chrome.runtime.onMessage.removeListener(handleMessage);
+        };
+      }, []);
+
+
     return (
         <div style={{backgroundColor: '#', height: 
             '100vh'}}>
@@ -25,7 +45,7 @@ const App = () => {
         </div>
     );
 
-    
+
 
 
 };

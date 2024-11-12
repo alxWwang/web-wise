@@ -21,13 +21,14 @@ chrome.tabs.onCreated.addListener((tab) => {
 
   // Optionally, listen for tab updates if you need to handle events after loading
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === "complete") {
-      console.log("Tab fully loaded:", tab);
-      
-      // Example: Check the URL and perform actions based on it
-      chrome.tabs.update(tabId, { url: "https://www.youtube.com" });
-    }
-  });
+  if (changeInfo.status === "complete") {
+    console.log("Tab fully loaded:", tab.url);
+    chrome.runtime.sendResponse({
+        type: "NEW_URL",
+        url: tab.url
+    })
+  }
+});
   
 
   
