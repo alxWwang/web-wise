@@ -15,20 +15,21 @@ const App = () => {
         console.log(currentView)
     })
 
-    useEffect((message) => {
-        // Set up the message listener
-        console.log(message)
+    useEffect(() => {
+        const messageListener = (message, sender, sendResponse) => {
+          if (message.type === 'NEW_URL') {
+            console.log('Received NEW_URL message:', message.url);
+            // Handle the new URL as needed
+          }
+        };
+    
+        chrome.runtime.onMessage.addListener(messageListener);
+    
+        // Clean up the listener when the component unmounts
+        return () => {
+          chrome.runtime.onMessage.removeListener(messageListener);
+        };
       }, []);
-
-    chrome.runtime.onMessage.addListener(
-        function(request, sender, sendResponse) {
-            console.log(sender.tab ?
-                        "from a content script:" + sender.tab.url :
-                        "from the extension");
-            sendResponse({farewell: "goodbye"});
-        }
-    );
-
 
     return (
         <div style={{backgroundColor: '#', height: 
