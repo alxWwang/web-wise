@@ -1,4 +1,5 @@
 // Header.js
+/*global chrome*/
 import React from 'react';
 import { useState, useEffect } from 'react';
 
@@ -9,27 +10,24 @@ import CheckLink from './CheckLink';
 
 const App = () => {
     const [currentView, setCurrentView] = useState(0)
+    const [tabUrl, setTabUrl] = useState("");
     useEffect(()=>{
         console.log(currentView)
     })
 
-    useEffect(() => {
+    useEffect((message) => {
         // Set up the message listener
-        const handleMessage = (message) => {
-          if (message.type === "NEW_URL") {
-            console.log("Received URL in React component:", message.url);
-            setTabUrl(message.url);
-          }
-        };
-    
-        // Listen for messages from the background script
-        chrome.runtime.onMessage.addListener(handleMessage);
-    
-        // Cleanup listener when component unmounts
-        return () => {
-          chrome.runtime.onMessage.removeListener(handleMessage);
-        };
+        console.log(message)
       }, []);
+
+    chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
+            console.log(sender.tab ?
+                        "from a content script:" + sender.tab.url :
+                        "from the extension");
+            sendResponse({farewell: "goodbye"});
+        }
+    );
 
 
     return (

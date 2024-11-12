@@ -23,7 +23,7 @@ chrome.tabs.onCreated.addListener((tab) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") {
     console.log("Tab fully loaded:", tab.url);
-    chrome.runtime.sendResponse({
+    chrome.runtime.sendMessage({
         type: "NEW_URL",
         url: tab.url
     })
